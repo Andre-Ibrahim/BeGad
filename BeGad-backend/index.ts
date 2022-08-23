@@ -1,4 +1,5 @@
 import express, { Application, Request, Response } from "express";
+import * as AuthenticationController from "./Controllers/AuthenticationController";
 
 const app: Application = express();
 const port = 80;
@@ -16,6 +17,8 @@ app.get(
 	}
 );
 
+AuthenticationController.register(app);
+
 try {
 	app.listen(port, (): void => {
 		console.log(`Connected successfully on port ${port}`);
@@ -23,3 +26,6 @@ try {
 } catch (error: any) {
 	console.error(`Error occured: ${error.message}`);
 }
+
+
+export default app;
