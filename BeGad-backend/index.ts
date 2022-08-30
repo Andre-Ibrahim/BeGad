@@ -1,31 +1,27 @@
-import express, { Application, Request, Response } from "express";
-import * as AuthenticationController from "./Controllers/AuthenticationController";
+import * as bodyParser from 'body-parser';
+import { Container } from 'inversify';
+import "reflect-metadata";
+import { interfaces, InversifyExpressServer, TYPE } from 'inversify-express-utils';
+import BaseController from "./Controllers/BaseController";
+import AuthentcationController from './Controllers/AuthenticationController';
 
-const app: Application = express();
-const port = 80;
+// declare metadata by @controller annotation
 
-// Body parsing Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// set up container
+let container = new Container();
 
-app.get(
-	"/",
-	async (req: Request, res: Response): Promise<Response> => {
-		return res.status(200).send({
-			message: "ok",
-		});
-	}
-);
+container.bind<BaseController>('BaseController').to(BaseController);
+container.bind<AuthentcationController>('AuthenticationController').to(AuthentcationController);
 
-AuthenticationController.register(app);
+// create server
+let server = new InversifyExpressServer(container);
+server.setConfig((app) => {
+  // add body parser
+  app.use(bodyParser.urlencoded({
+    extended: true
+  }));
+  app.use(bodyParser.json());
+});
 
-try {
-	app.listen(port, (): void => {
-		console.log(`Connected successfully on port ${port}`);
-	});
-} catch (error: any) {
-	console.error(`Error occured: ${error.message}`);
-}
-
-
-export default app;
+let app = server.build();
+app.listen(80);

@@ -1,17 +1,17 @@
+import { controller, httpPost, interfaces } from "inversify-express-utils";
 import * as express from "express";
 
-export const register = ( app: express.Application ) => {
-    const oidc = app.locals.oidc;
+@controller("/authentication")
+export default class AuthentcationController implements interfaces.Controller {
+    
+    @httpPost("/login")
+    private login(req: express.Request, res: express.Response, next: express.NextFunction): void {
+        res.send("user is logged in");
+    }
 
-    // define a secure route handler for the login page that redirects to /guitars
-    app.post( "/login", ( req, res ) => {
+    @httpPost("/logout")
+    private logout(req: express.Request, res: express.Response, next: express.NextFunction): void {
+        res.send("user is logged out");
+    }
 
-        res.send(req.body.username);
-    } );
-
-    // define a route to handle logout
-    app.get( "/logout", ( req: any, res ) => {
-        res.redirect( "/" );
-    } );
-
-};
+}
